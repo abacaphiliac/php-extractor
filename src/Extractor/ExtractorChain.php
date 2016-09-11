@@ -56,7 +56,7 @@ class ExtractorChain implements ExtractionInterface
             return $data;
         }, $this->extractors);
         
-        if (!$dataSets) {
+        if (count($dataSets) < 1) {
             return [];
         }
         
