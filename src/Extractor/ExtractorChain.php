@@ -56,14 +56,19 @@ class ExtractorChain implements ExtractionInterface
             return $data;
         }, $this->extractors);
         
-        $result = [];
+        if (count($dataSets) < 1) {
+            return [];
+        }
         
-        if ($this->mergeRecursively) {
-            foreach ($dataSets as $data) {
-                $result = ArrayUtils::merge($result, $data);
-            }
-        } else {
-            $result = array_merge(...$dataSets);
+        if (!$this->mergeRecursively) {
+            return array_merge(...$dataSets);
+        }
+        
+        $result = [];
+        foreach ($dataSets as $data) {
+            // Zend's function will overwrite keys with new values upon collision, as opposed to PHP's native
+            // array_merge_recursive function which will generate a new array of merged values for that key.
+            $result = ArrayUtils::merge($result, $data);
         }
         
         return $result;

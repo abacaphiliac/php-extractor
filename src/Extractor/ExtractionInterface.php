@@ -5,7 +5,7 @@ namespace Abacaphiliac\Extractor;
 interface ExtractionInterface
 {
     /**
-     * @return \Traversable|mixed[]
+     * @return mixed[]
      */
     public function extract();
 }

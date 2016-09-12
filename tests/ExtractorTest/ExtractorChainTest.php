@@ -119,4 +119,44 @@ class ExtractorChainTest extends \PHPUnit_Framework_TestCase
 
         $sut->extract();
     }
+
+    public function testExtractRecursively()
+    {
+        $sut = new ExtractorChain([
+            $firstExtractor = $this->getMockBuilder(ExtractionInterface::class)->getMock(),
+            $secondExtractor = $this->getMockBuilder(ExtractionInterface::class)->getMock(),
+            $thirdExtractor = $this->getMockBuilder(ExtractionInterface::class)->getMock(),
+        ]);
+
+        $firstExtractor->expects(self::any())->method('extract')->will(self::returnValue(new \ArrayIterator([
+            'Foo' => [
+                'Foo' => 'Bar',
+            ],
+        ])));
+
+        $secondExtractor->expects(self::any())->method('extract')->will(self::returnValue(new \ArrayIterator([
+            'Foo' => [
+                'Fizz' => 'Buzz',
+            ],
+        ])));
+
+        $thirdExtractor->expects(self::any())->method('extract')->will(self::returnValue(new \ArrayIterator([
+            'Foo' => [
+                'asdf' => 'qwer',
+            ],
+        ])));
+
+        $actual = $sut->extract();
+
+        self::assertArraySubset(
+            [
+                'Foo' => [
+                    'Foo' => 'Bar',
+                    'Fizz' => 'Buzz',
+                    'asdf' => 'qwer',
+                ],
+            ],
+            $actual
+        );
+    }
 }
